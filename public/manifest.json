@@ -1,0 +1,12 @@
+{
+    "id": "any_id",
+    "name": "Campus Quest PWA",
+    "short_name": " CQ PWA",
+    "description": "Your next quest is waiting for you!",
+    "theme_color": "#FFFFFF",
+    "background_color": "#FFFFFF",
+    "start_url": "/",
+    "scope": ".",
+    "display": "standalone",
+    "orientation": "portrait"
+  }
