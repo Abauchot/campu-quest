@@ -4,12 +4,11 @@ import React, { useEffect, useRef } from 'react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 
 const QRScanPage = () => {
-    const qrRef = useRef(null);
+    const qrRef = { fps: 10, qrbox: { width: 500, height: 500 } };
 
     useEffect(() => {
         const html5QrCode = new Html5QrcodeScanner(
             "qr-reader",
-            { fps: 10, qrbox: 250 },
       /* verbose= */ false
         );
         const onScanSuccess = (decodedText, decodedResult) => {
