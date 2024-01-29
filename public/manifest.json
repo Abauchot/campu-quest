@@ -1,12 +1,19 @@
 {
-    "id": "any_id",
-    "name": "Campus Quest PWA",
-    "short_name": " CQ PWA",
-    "description": "Your next quest is waiting for you!",
-    "theme_color": "#FFFFFF",
-    "background_color": "#FFFFFF",
-    "start_url": "/",
-    "scope": ".",
-    "display": "standalone",
-    "orientation": "portrait"
-  }
+  "id": "any_id",
+  "name": "Campus Quest PWA",
+  "short_name": "CQ PWA",
+  "description": "Your next adventure starts here!",
+  "icons": [
+    {
+      "src": "./logo512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#FFFFFF",
+  "background_color": "#FFFFFF",
+  "start_url": "/",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait"
+}
