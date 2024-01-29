@@ -4,7 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 
 const QRScanPage = () => {
-    const qrRef = { fps: 10, qrbox: { width: 500, height: 500 } };
+    const qrRef = { fps: 10, qrbox: { width: 1000, height: 1000 } };
 
     useEffect(() => {
         const html5QrCode = new Html5QrcodeScanner(
