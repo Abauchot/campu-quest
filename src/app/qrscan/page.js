@@ -6,6 +6,7 @@ const QRScanPage = () => {
     const qrRef = useRef(null);
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
+    const [withinRadius, setWithinRadius] = useState(false);
 
     const getGeolocation = () => {
         return new Promise((resolve, reject) => {
@@ -15,6 +16,23 @@ const QRScanPage = () => {
                 reject(new Error('Geolocation is not supported by this browser.'));
             }
         });
+    };
+
+    const getDistanceFromLatLonInM = (lat1, lon1, lat2, lon2) => {
+        const R = 6371; // Radius of the earth in km
+        const dLat = deg2rad(lat2 - lat1);
+        const dLon = deg2rad(lon2 - lon1);
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const d = R * c; // Distance in km
+        return d * 1000; // Distance in m
+    };
+
+    const deg2rad = (deg) => {
+        return deg * (Math.PI / 180);
     };
 
     useEffect(() => {
@@ -30,6 +48,12 @@ const QRScanPage = () => {
                 const position = await getGeolocation();
                 setLatitude(position.coords.latitude);
                 setLongitude(position.coords.longitude);
+                const distance = getDistanceFromLatLonInM(position.coords.latitude, position.coords.longitude, 49.20065, -0.35028);
+                if (distance <= 50) {
+                    setWithinRadius(true);
+                } else {
+                    setWithinRadius(false);
+                }
             } catch (error) {
                 console.log(`Error getting geolocation: ${error}`);
             }
@@ -58,6 +82,7 @@ const QRScanPage = () => {
             {latitude && longitude && (
                 <p>Latitude: {latitude}, Longitude: {longitude}</p>
             )}
+            {withinRadius ? <p>Within 50 meter radius</p> : <p>Outside 50 meter radius</p>}
         </div>
     );
 };
