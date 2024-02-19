@@ -51,6 +51,7 @@ const QRScanPage = () => {
                 const distance = getDistanceFromLatLonInM(position.coords.latitude, position.coords.longitude, 49.20065, -0.35028);
                 if (distance <= 50) {
                     setWithinRadius(true);
+                    alert('Success! You are within the 50 meter radius.');
                 } else {
                     setWithinRadius(false);
                 }
@@ -69,7 +70,7 @@ const QRScanPage = () => {
         html5QrCode.render(onScanSuccess, (errorMessage) => {
             console.log(errorMessage);
         });
-
+    
         return () => {
             html5QrCode.clear();
         };
