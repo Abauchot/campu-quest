@@ -69,7 +69,7 @@ const QRScanPage = () => {
               longitude,
               scannedCoordinates.latitude,
               scannedCoordinates.longitude,
-              20
+              200
           )
         : false;
 
@@ -88,10 +88,10 @@ const QRScanPage = () => {
                 </p>
             )}
             {withinRadius && (
-                <p style={{ color: 'green' }}>Scanned coordinates are within 20 meters radius!</p>
+                <p style={{ color: 'green' }}>Scanned coordinates are within 200 meters radius!</p>
             )}
             {!withinRadius && (
-                <p style={{ color: 'red' }}>Scanned coordinates are NOT within 20 meters radius!</p>
+                <p style={{ color: 'red' }}>Scanned coordinates are NOT within 200 meters radius!</p>
             )}
         </div>
     );
