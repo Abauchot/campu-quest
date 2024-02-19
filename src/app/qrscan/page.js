@@ -8,16 +8,6 @@ const QRScanPage = () => {
     const [longitude, setLongitude] = useState(null);
     const [withinRadius, setWithinRadius] = useState(false);
 
-    const getGeolocation = () => {
-        return new Promise((resolve, reject) => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(resolve, reject);
-            } else {
-                reject(new Error('Geolocation is not supported by this browser.'));
-            }
-        });
-    };
-
     const getDistanceFromLatLonInM = (lat1, lon1, lat2, lon2) => {
         const R = 6371; // Radius of the earth in km
         const dLat = deg2rad(lat2 - lat1);
@@ -36,14 +26,7 @@ const QRScanPage = () => {
     };
 
     useEffect(() => {
-        const html5QrCode = new Html5QrcodeScanner(
-            "qr-reader",
-            { fps: 10, qrbox: 250 },
-            /* verbose= */ false
-        );
-        const onScanSuccess = async (decodedText, decodedResult) => {
-            console.log(`Code scanned = ${decodedText}`, decodedResult);
-            // Get geolocation
+        const checkGeolocation = async () => {
             try {
                 const position = await getGeolocation();
                 setLatitude(position.coords.latitude);
@@ -51,13 +34,23 @@ const QRScanPage = () => {
                 const distance = getDistanceFromLatLonInM(position.coords.latitude, position.coords.longitude, 49.20065, -0.35028);
                 if (distance <= 50) {
                     setWithinRadius(true);
-                    alert('Success! You are within the 50 meter radius.');
+                    alert('Your custom success message here');
                 } else {
                     setWithinRadius(false);
                 }
             } catch (error) {
                 console.log(`Error getting geolocation: ${error}`);
             }
+        };
+    
+        const html5QrCode = new Html5QrcodeScanner(
+            "qr-reader",
+            { fps: 10, qrbox: 250 },
+            /* verbose= */ false
+        );
+        const onScanSuccess = async (decodedText, decodedResult) => {
+            console.log(`Code scanned = ${decodedText}`, decodedResult);
+            await checkGeolocation();
             // Handle the scanned text as needed.
             if (decodedText.startsWith('http://') || decodedText.startsWith('https://')) {
                 // If the decoded text is a URL, navigate to it
@@ -75,7 +68,6 @@ const QRScanPage = () => {
             html5QrCode.clear();
         };
     }, []);
-
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-black">
             <div id="qr-reader" ref={qrRef} className="w-full max-w-md">
