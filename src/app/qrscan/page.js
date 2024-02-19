@@ -18,37 +18,25 @@ const QRScanPage = () => {
     };
 
     useEffect(() => {
-        const html5QrCode = new Html5QrcodeScanner(
-            "qr-reader",
-            { fps: 10, qrbox: 250 },
-            /* verbose= */ false
-        );
-        const onScanSuccess = async (decodedText, decodedResult) => {
-            console.log(`Code scanned = ${decodedText}`, decodedResult);
-            // Get geolocation
-            try {
-                const position = await getGeolocation();
-                setLatitude(position.coords.latitude);
-                setLongitude(position.coords.longitude);
-            } catch (error) {
-                console.log(`Error getting geolocation: ${error}`);
-            }
-            // Handle the scanned text as needed.
-            if (decodedText.startsWith('http://') || decodedText.startsWith('https://')) {
-                // If the decoded text is a URL, navigate to it
-                window.location.href = decodedText;
-            } else {
-                // Otherwise, handle the text as needed
-                console.log(`QR code does not contain a URL: ${decodedText}`);
-            }
-        };
-        html5QrCode.render(onScanSuccess, (errorMessage) => {
-            console.log(errorMessage);
+        getGeolocation().then(position => {
+            setLatitude(position.coords.latitude);
+            setLongitude(position.coords.longitude);
+    
+            const html5QrCode = new Html5QrcodeScanner(
+                "qr-reader",
+                { fps: 10, qrbox: 250 },
+                /* verbose= */ false
+            );
+            const onScanSuccess = async (decodedText, decodedResult) => {
+                console.log(`Code scanned = ${decodedText}`, decodedResult);
+                // Geolocation is already obtained here
+            };
+            html5QrCode.render(onScanSuccess, error => {
+                console.log(`QR code scan error = ${error}`);
+            });
+        }).catch(error => {
+            console.log(`Geolocation error = ${error}`);
         });
-
-        return () => {
-            html5QrCode.clear();
-        };
     }, []);
 
     return (
