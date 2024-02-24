@@ -51,16 +51,27 @@ const QRScanPage = () => {
     
                 const onScanSuccess = (decodedText, decodedResult) => {
                     console.log(`Code scanned = ${decodedText}`, decodedResult);
-                    
+    
+                    // if the decoded text is a URL, redirect to it
+                    if (isValidURL(decodedText)) {
+                        window.location.href = decodedText;
+                    }
                 };
     
-                html5QrCode.render(onScanSuccess, error => {
+                const onScanFailure = (error) => {
                     console.log(`QR code scan error = ${error}`);
-                });
+                };
+    
+                html5QrCode.render(onScanSuccess, onScanFailure);
             })
             .catch(error => {
                 console.log(`Geolocation error = ${error}`);
             });
+    
+        function isValidURL(string) {
+            const res = string.match(/(https?:\/\/[^\s]+)/g);
+            return (res !== null)
+        }
     }, []);
 
     const withinRadius = latitude && longitude
