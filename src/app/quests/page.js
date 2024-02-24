@@ -48,7 +48,27 @@ export default function Quests() {
     } catch (error) {
       console.error('Error creating quest:', error);
     }
+
   };
+
+  const handleDeleteQuest = async (id) => {
+    try {
+      const response = await fetch(`/api/quests/removeQuest?id=${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const { quest } = await response.json();
+      const updatedQuests = quests.filter((q) => q.id !== quest.id);
+      setQuests(updatedQuests); // Update the quests state
+      console.log('Quest deleted successfully:', quest);
+    } catch (error) {
+      console.error('Error deleting quest:', error);
+    }
+  }
 
   return (
     <div className="bg-black text-white min-h-screen">
@@ -84,6 +104,7 @@ export default function Quests() {
             {quests.map((quest, index) => (
               <li key={index} className="mb-2 p-2 border border-gray-700 rounded-md">
                 {quest.name} - {quest.serialQuest}
+                <button  onClick={() => handleDeleteQuest(quest.id)}>Delete</button>
               </li>
             ))}
           </ul>
