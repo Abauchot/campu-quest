@@ -18,19 +18,18 @@ const QRScanPage = () => {
         });
     };
 
-    const isWithinRadius = (lat1, lon1, lat2, lon2, radius) => {
-        const R = 6371e3; // Earth radius in meters
-        const φ1 = (lat1 * Math.PI) / 180; // φ, λ in radians
-        const φ2 = (lat2 * Math.PI) / 180;
-        const Δφ = ((lat2 - lat1) * Math.PI) / 180;
-        const Δλ = ((lon2 - lon1) * Math.PI) / 180;
-
-        const a =
-            Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-            Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const isWithinRadius = (latitude1, longitude1, latitude2, longitude2, radius) => {
+        const earthRadiusInMeters = 6371e3;
+        const latitude1InRadians = (latitude1 * Math.PI) / 180;
+        const latitude2InRadians = (latitude2 * Math.PI) / 180;
+        const deltaLatitudeInRadians = ((latitude2 - latitude1) * Math.PI) / 180;
+        const deltaLongitudeInRadians = ((longitude2 - longitude1) * Math.PI) / 180;
+    
+        const a = Math.sin(deltaLatitudeInRadians / 2) * Math.sin(deltaLatitudeInRadians / 2) +
+                  Math.cos(latitude1InRadians) * Math.cos(latitude2InRadians) * Math.sin(deltaLongitudeInRadians / 2) * Math.sin(deltaLongitudeInRadians / 2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        const distance = R * c; // in meters
+    
+        const distance = earthRadiusInMeters * c; // in meters
         return distance <= radius;
     };
 
@@ -39,21 +38,27 @@ const QRScanPage = () => {
             .then(position => {
                 setLatitude(position.coords.latitude);
                 setLongitude(position.coords.longitude);
-
+    
                 const html5QrCode = new Html5QrcodeScanner(
                     "qr-reader",
                     { fps: 10, qrbox: 250 },
                     /* verbose= */ false
                 );
-
+    
                 const onScanSuccess = async (decodedText, decodedResult) => {
                     console.log(`Code scanned = ${decodedText}`, decodedResult);
-                    setScannedCoordinates({
-                        latitude: decodedResult?.location?.latitude,
-                        longitude: decodedResult?.location?.longitude,
-                    });
+    
+                    // if the decoded text is a URL, redirect to it
+                    if (isValidURL(decodedText)) {
+                        window.location.href = decodedText;
+                    } else {
+                        setScannedCoordinates({
+                            latitude: decodedResult?.location?.latitude,
+                            longitude: decodedResult?.location?.longitude,
+                        });
+                    }
                 };
-
+    
                 html5QrCode.render(onScanSuccess, error => {
                     console.log(`QR code scan error = ${error}`);
                 });
@@ -61,6 +66,11 @@ const QRScanPage = () => {
             .catch(error => {
                 console.log(`Geolocation error = ${error}`);
             });
+    
+        function isValidURL(string) {
+            const res = string.match(/(https?:\/\/[^\s]+)/g);
+            return (res !== null)
+        }
     }, []);
 
     const withinRadius = scannedCoordinates
