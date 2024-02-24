@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
+import Navbar from '../component/navbar';
 
 export default function Quests() {
   const [quests, setQuests] = useState([]);
@@ -51,6 +52,7 @@ export default function Quests() {
 
   return (
     <div className="bg-black text-white min-h-screen">
+      <Navbar />
       <div className="max-w-md mx-auto py-12">
         <h1 className="text-xl font-bold mb-6">Create a Quest</h1>
         <form onSubmit={handleQuestSubmit} className="bg-gray-800 p-6 rounded-lg">

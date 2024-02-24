@@ -14,8 +14,12 @@ export default function LogButton() {
 	}
 	return (
 		<>
-			Not signed in <br />
-			<button onClick={() => signIn()}>Sign in</button>
+			<button
+				onClick={() => signIn()}
+				className="bg-yellow-400  bg-opacity-50 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
+			>
+				Sign in
+			</button>
 		</>
 	)
 }
