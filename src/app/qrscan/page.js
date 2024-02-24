@@ -8,6 +8,10 @@ const QRScanPage = () => {
     const [longitude, setLongitude] = useState(null);
     const [scannedCoordinates, setScannedCoordinates] = useState(null);
 
+    // School coordinates
+    const targetLatitude = 49.20026397705078;
+    const targetLongitude = -0.35017213225364685;
+
     const getGeolocation = () => {
         return new Promise((resolve, reject) => {
             if (navigator.geolocation) {
@@ -45,18 +49,9 @@ const QRScanPage = () => {
                     /* verbose= */ false
                 );
     
-                const onScanSuccess = async (decodedText, decodedResult) => {
+                const onScanSuccess = (decodedText, decodedResult) => {
                     console.log(`Code scanned = ${decodedText}`, decodedResult);
-    
-                    // if the decoded text is a URL, redirect to it
-                    if (isValidURL(decodedText)) {
-                        window.location.href = decodedText;
-                    } else {
-                        setScannedCoordinates({
-                            latitude: decodedResult?.location?.latitude,
-                            longitude: decodedResult?.location?.longitude,
-                        });
-                    }
+                    
                 };
     
                 html5QrCode.render(onScanSuccess, error => {
@@ -66,19 +61,14 @@ const QRScanPage = () => {
             .catch(error => {
                 console.log(`Geolocation error = ${error}`);
             });
-    
-        function isValidURL(string) {
-            const res = string.match(/(https?:\/\/[^\s]+)/g);
-            return (res !== null)
-        }
     }, []);
 
-    const withinRadius = scannedCoordinates
+    const withinRadius = latitude && longitude
         ? isWithinRadius(
               latitude,
               longitude,
-              scannedCoordinates.latitude,
-              scannedCoordinates.longitude,
+              targetLatitude,
+              targetLongitude,
               200
           )
         : false;
