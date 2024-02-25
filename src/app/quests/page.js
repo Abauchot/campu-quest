@@ -70,6 +70,20 @@ export default function Quests() {
     }
   }
 
+  const fetchQuestById = async (id) => {
+    try {
+      const response = await fetch(`/api/quests/getQuestById?id=${id}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const quest = await response.json();
+      console.log('Fetched quest:', quest);
+      return quest;
+    } catch (error) {
+      console.error('Error fetching quest:', error);
+    }
+  };
+
   return (
     <div className="bg-black text-white min-h-screen">
       <Navbar />
@@ -105,6 +119,7 @@ export default function Quests() {
               <li key={index} className="mb-2 p-2 border border-gray-700 rounded-md">
                 {quest.name} - {quest.serialQuest}
                 <button  onClick={() => handleDeleteQuest(quest.id)}>Delete</button>
+                <button onClick={() => fetchQuestById(quest.id)}>Fetch</button>
               </li>
             ))}
           </ul>
