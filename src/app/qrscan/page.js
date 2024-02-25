@@ -59,6 +59,7 @@ const QRScanPage = () => {
                     // Check if the scanned QR code matches the SerialQuest
                     if (decodedText === '4e2a7b1c5d6f8a9b') {
                         console.log('Success! The scanned QR code matches the SerialQuest!');
+                        setIsSuccess(true);
                     }
                     // if the decoded text is a URL, redirect to it
                     else if (isValidURL(decodedText)) {
