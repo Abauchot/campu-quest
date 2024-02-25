@@ -8,6 +8,9 @@ const QRScanPage = () => {
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
     const [scannedCoordinates, setScannedCoordinates] = useState(null);
+    const [serialQuest, setSerialQuest] = useState(null);
+    const [isMatch, setIsMatch] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
 
     // School coordinates
     const targetLatitude = 49.20026397705078;
@@ -18,7 +21,7 @@ const QRScanPage = () => {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(resolve, reject);
             } else {
-                reject(new Error('Geolocation is not supported by this browser.'));
+                reject(new Error('Geolocation is not supported by this browser or smartphone.'));
             }
         });
     };
@@ -53,8 +56,12 @@ const QRScanPage = () => {
                 const onScanSuccess = (decodedText, decodedResult) => {
                     console.log(`Code scanned = ${decodedText}`, decodedResult);
 
+                    // Check if the scanned QR code matches the SerialQuest
+                    if (decodedText === '4e2a7b1c5d6f8a9b') {
+                        console.log('Success! The scanned QR code matches the SerialQuest!');
+                    }
                     // if the decoded text is a URL, redirect to it
-                    if (isValidURL(decodedText)) {
+                    else if (isValidURL(decodedText)) {
                         window.location.href = decodedText;
                     }
                 };
@@ -85,11 +92,31 @@ const QRScanPage = () => {
         )
         : false;
 
+    const handleDeleteQuest = async (id) => {
+        try {
+            const response = await fetch(`/api/quests/removeQuest?id=${id}`, {
+                method: 'DELETE',
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const { quest } = await response.json();
+            const updatedQuests = quests.filter((q) => q.id !== quest.id);
+            setQuests(updatedQuests); // Update the quests state
+            console.log('Quest deleted successfully:', quest);
+        } catch (error) {
+            console.error('Error deleting quest:', error);
+        }
+    }
+
     return (
         <div>
             <Navbar />
             <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-black">
                 <div id="qr-reader" ref={qrRef} className="w-full max-w-md"></div>
+                {isSuccess && <p>Success! The scanned QR code matches the SerialQuest!</p>}
                 {latitude && longitude && (
                     <p>
                         Your current coordinates: Latitude: {latitude}, Longitude: {longitude}

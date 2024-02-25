@@ -48,8 +48,8 @@ export default function Quests() {
     } catch (error) {
       console.error('Error creating quest:', error);
     }
-
   };
+  
   const fetchQuestById = async (id) => {
     try {
       const response = await fetch(`/api/quests/getQuestById?id=${id}`);
@@ -116,8 +116,8 @@ export default function Quests() {
           <ul>
             {quests.map((quest, index) => (
               <li key={index} className="mb-2 p-2 border border-gray-700 rounded-md">
-                {quest.name} - {quest.serialQuest}
-                <button  onClick={() => handleDeleteQuest(quest.id)}>Delete</button>
+                {quest.name} - {quest.serialQuest} <br />
+                <button  onClick={() => handleDeleteQuest(quest.id)}>Delete</button> <br />
                 <button onClick={() => fetchQuestById(quest.id)}>Fetch</button>
               </li>
             ))}
