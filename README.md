@@ -1,8 +1,3 @@
- *Résumé du projet*
-
-Réalisation d’un POC d’une application de jeu de piste interactive sur le campus de MyDigitalSchool Caen. Cette application devront respecter les fonctionnalités d’une PWA (Progressive Web App). Les étudiants devront résoudre des énigmes afin de trouver des QRCode qu’ils pourront scanner afin de valider la quête dans l’application.
-
-
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
