@@ -84,11 +84,11 @@ export default function Quests() {
   }
 
   return (
-    <div className="bg-black text-white min-h-screen">
+    <div className=" text-black min-h-screen">
       <Navbar />
       <div className="max-w-md mx-auto py-12">
         <h1 className="text-xl font-bold mb-6">Create a Quest</h1>
-        <form onSubmit={handleQuestSubmit} className="bg-gray-800 p-6 rounded-lg">
+        <form onSubmit={handleQuestSubmit} className="bg-grey-000 p-6 rounded-lg">
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2" htmlFor="questName">Quest Name:</label>
             <input

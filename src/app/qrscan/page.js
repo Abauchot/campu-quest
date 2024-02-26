@@ -11,6 +11,8 @@ const QRScanPage = () => {
     const [serialQuest, setSerialQuest] = useState(null);
     const [isMatch, setIsMatch] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+
 
     // School coordinates
     const targetLatitude = 49.20026397705078;
@@ -53,34 +55,45 @@ const QRScanPage = () => {
                     /* verbose= */ false
                 );
 
-                const onScanSuccess = (decodedText, decodedResult) => {
+                const onScanSuccess = async (decodedText, decodedResult) => {
                     console.log(`Code scanned = ${decodedText}`, decodedResult);
-
-                    // Check if the scanned QR code matches the SerialQuest
-                    if (decodedText === '4e2a7b1c5d6f8a9b') {
-                        console.log('Success! The scanned QR code matches the SerialQuest!');
-                        setIsSuccess(true);
-                    }
-                    // if the decoded text is a URL, redirect to it
-                    else if (isValidURL(decodedText)) {
-                        window.location.href = decodedText;
+                    
+                    try {
+                        const response = await fetch(`/api/quests/getSerialQuest?serialQuest=${decodedText}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            console.log('Success! The scanned QR code matches a SerialQuest in the DB.');
+                            setIsSuccess(true);
+                            // Vous pouvez également définir le state serialQuest ici, si nécessaire
+                            setSerialQuest(decodedText);
+                        } else {
+                            console.log('Error: The scanned QR code does not match any SerialQuest in the DB.');
+                            setIsSuccess(false);
+                            setErrorMessage('The scanned QR code does not match any SerialQuest in the DB.');
+                        }
+                    } catch (error) {
+                        console.error('Error verifying serialQuest:', error);
+                        setIsSuccess(false);
+                        // Afficher un message d'erreur à l'utilisateur
                     }
                 };
+                
 
                 const onScanFailure = (error) => {
-                    console.log(`QR code scan error = ${error}`);
                 };
 
-                html5QrCode.render(onScanSuccess, onScanFailure);
+                html5QrCode.render(onScanSuccess);
             })
             .catch(error => {
                 console.log(`Geolocation error = ${error}`);
             });
-
-        function isValidURL(string) {
-            const res = string.match(/(https?:\/\/[^\s]+)/g);
-            return (res !== null)
-        }
     }, []);
 
     const withinRadius = latitude && longitude
@@ -93,31 +106,13 @@ const QRScanPage = () => {
         )
         : false;
 
-    const handleDeleteQuest = async (id) => {
-        try {
-            const response = await fetch(`/api/quests/removeQuest?id=${id}`, {
-                method: 'DELETE',
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const { quest } = await response.json();
-            const updatedQuests = quests.filter((q) => q.id !== quest.id);
-            setQuests(updatedQuests); // Update the quests state
-            console.log('Quest deleted successfully:', quest);
-        } catch (error) {
-            console.error('Error deleting quest:', error);
-        }
-    }
-
     return (
         <div>
             <Navbar />
-            <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-black">
+            <div className="flex flex-col  items-center justify-center min-h-screen p-4 bg-grey">
                 <div id="qr-reader" ref={qrRef} className="w-full max-w-md"></div>
                 {isSuccess && <p>Success! The scanned QR code matches the SerialQuest!</p>}
+                {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
                 {latitude && longitude && (
                     <p>
                         Your current coordinates: Latitude: {latitude}, Longitude: {longitude}
