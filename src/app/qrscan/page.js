@@ -12,6 +12,7 @@ const QRScanPage = () => {
     const [isMatch, setIsMatch] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    
 
 
     // School coordinates
@@ -59,29 +60,30 @@ const QRScanPage = () => {
                     console.log(`Code scanned = ${decodedText}`, decodedResult);
                     
                     try {
-                        const response = await fetch(`/api/quests/getSerialQuest?serialQuest=${decodedText}`, {
+                        const response = await fetch(`/api/quests/getSerialQuest?serialQuest=${decodedText.toLowerCase()}`, {
                             method: 'GET',
                             headers: {
                                 'Content-Type': 'application/json',
                             },
                         });
-                        
+                
                         const data = await response.json();
-                        
-                        if (data.success) {
+                
+                        if (response.ok) { // Utilisez response.ok pour vérifier que le code de statut HTTP est 2xx
+                            // QR code valide et trouvé
                             console.log('Success! The scanned QR code matches a SerialQuest in the DB.');
                             setIsSuccess(true);
-                            // Vous pouvez également définir le state serialQuest ici, si nécessaire
-                            setSerialQuest(decodedText);
+                            setErrorMessage(''); // Reset error message if successful
                         } else {
-                            console.log('Error: The scanned QR code does not match any SerialQuest in the DB.');
+                            // QR code non trouvé ou autre erreur
+                            console.log(data.message || 'QR code not found or an error occurred.');
                             setIsSuccess(false);
-                            setErrorMessage('The scanned QR code does not match any SerialQuest in the DB.');
+                            setErrorMessage(data.message || 'An unknown error occurred.');
                         }
                     } catch (error) {
                         console.error('Error verifying serialQuest:', error);
                         setIsSuccess(false);
-                        // Afficher un message d'erreur à l'utilisateur
+                        setErrorMessage('An error occurred while verifying the QR code.');
                     }
                 };
                 
@@ -111,7 +113,7 @@ const QRScanPage = () => {
             <Navbar />
             <div className="flex flex-col  items-center justify-center min-h-screen p-4 bg-grey">
                 <div id="qr-reader" ref={qrRef} className="w-full max-w-md"></div>
-                {isSuccess && <p>Success! The scanned QR code matches the SerialQuest!</p>}
+                {isSuccess && <p style={{color: 'green', fontSize:'25px'}}>Success! You just find a quest !</p>}
                 {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
                 {latitude && longitude && (
                     <p>
