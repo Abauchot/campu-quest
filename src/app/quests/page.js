@@ -117,8 +117,7 @@ export default function Quests() {
             {quests.map((quest, index) => (
               <li key={index} className="mb-2 p-2 border border-gray-700 rounded-md">
                 {quest.name} - {quest.serialQuest} <br />
-                <button  onClick={() => handleDeleteQuest(quest.id)}>Delete</button> <br />
-                <button onClick={() => fetchQuestById(quest.id)}>Fetch</button>
+                <button  onClick={() => handleDeleteQuest(quest.id)}>Delete</button>
               </li>
             ))}
           </ul>
